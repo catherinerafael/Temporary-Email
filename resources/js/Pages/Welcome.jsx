@@ -15,6 +15,11 @@ export default function Welcome() {
         reset();
     };
 
+    const handlePrefixChange = (newPrefix) => {
+        setEmailPrefix(newPrefix);
+        reset();
+    };
+
     return (
         <>
             <Head title="Erlandak Mail">
@@ -22,7 +27,6 @@ export default function Welcome() {
             </Head>
 
             <div className="min-h-screen bg-[#09090b] text-white antialiased" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
-                {/* Ambient background glow */}
                 <div className="fixed inset-0 overflow-hidden pointer-events-none">
                     <div className="absolute top-[-20%] left-[30%] w-[600px] h-[600px] bg-blue-600/[0.07] rounded-full blur-[120px]" />
                     <div className="absolute top-[-10%] right-[20%] w-[400px] h-[400px] bg-violet-600/[0.07] rounded-full blur-[120px]" />
@@ -30,7 +34,12 @@ export default function Welcome() {
                 </div>
 
                 <div className="relative z-10">
-                    <EmailGenerator fullEmail={fullEmail} onRegenerate={handleRegenerate} />
+                    <EmailGenerator
+                        emailPrefix={emailPrefix}
+                        fullEmail={fullEmail}
+                        onPrefixChange={handlePrefixChange}
+                        onRegenerate={handleRegenerate}
+                    />
                     <InboxList
                         emails={emails}
                         fullEmail={fullEmail}
@@ -38,7 +47,6 @@ export default function Welcome() {
                         selectedId={selectedId}
                         onSelectEmail={setSelectedId}
                     />
-
                     <footer className="text-center py-8 text-[11px] text-zinc-600 tracking-wider uppercase">
                         Powered by erlandak.com
                     </footer>

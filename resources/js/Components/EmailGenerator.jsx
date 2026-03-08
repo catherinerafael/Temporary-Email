@@ -1,7 +1,8 @@
 import { useState } from 'react';
+import { DOMAIN } from '@/utils/email';
 import { RefreshIcon, CopyIcon } from './Icons';
 
-export default function EmailGenerator({ fullEmail, onRegenerate }) {
+export default function EmailGenerator({ emailPrefix, fullEmail, onPrefixChange, onRegenerate }) {
     const [copied, setCopied] = useState(false);
 
     const copyEmail = () => {
@@ -10,9 +11,14 @@ export default function EmailGenerator({ fullEmail, onRegenerate }) {
         setTimeout(() => setCopied(false), 2000);
     };
 
+    const handleInputChange = (e) => {
+        // Only allow alphanumeric, dots, dashes, underscores
+        const value = e.target.value.replace(/[^a-zA-Z0-9._-]/g, '').toLowerCase();
+        onPrefixChange(value);
+    };
+
     return (
         <header className="relative">
-            {/* Top accent line */}
             <div className="h-[2px] bg-gradient-to-r from-transparent via-blue-500 to-transparent" />
 
             <div className="max-w-2xl mx-auto px-4 sm:px-6 pt-12 pb-6 sm:pt-16 sm:pb-8 text-center">
@@ -39,35 +45,46 @@ export default function EmailGenerator({ fullEmail, onRegenerate }) {
                         Your Email Address
                     </label>
 
-                    {/* Email row */}
-                    <div className="flex items-center gap-2 sm:gap-3 mb-3">
-                        <div className="flex-1 bg-zinc-950/80 border border-zinc-800 rounded-xl px-3 sm:px-4 py-3 sm:py-3.5 min-w-0">
-                            <span
-                                className="block text-sm sm:text-lg font-bold truncate select-all bg-gradient-to-r from-blue-400 to-violet-400 bg-clip-text text-transparent"
-                                style={{ fontFamily: "'JetBrains Mono', monospace" }}
-                            >
-                                {fullEmail}
-                            </span>
-                        </div>
-                        <button
-                            onClick={copyEmail}
-                            className={`shrink-0 h-[46px] sm:h-[50px] px-4 sm:px-5 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 ${copied
-                                ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 ring-2 ring-emerald-500/20'
-                                : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 active:scale-[0.97]'
-                                }`}
+                    {/* Editable email input with protected domain */}
+                    <div className="flex items-center gap-0 bg-zinc-950/80 border border-zinc-800 rounded-xl mb-3 focus-within:border-blue-500/50 focus-within:ring-1 focus-within:ring-blue-500/20 transition-all">
+                        <input
+                            type="text"
+                            value={emailPrefix}
+                            onChange={handleInputChange}
+                            placeholder="type-any-email"
+                            className="flex-1 bg-transparent px-3 sm:px-4 py-3 sm:py-3.5 text-sm sm:text-lg font-bold text-blue-400 outline-none min-w-0 placeholder-zinc-700"
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
+                            spellCheck={false}
+                            autoComplete="off"
+                        />
+                        <span
+                            className="shrink-0 px-3 sm:px-4 py-3 sm:py-3.5 text-sm sm:text-lg font-bold text-zinc-500 border-l border-zinc-800 select-none"
+                            style={{ fontFamily: "'JetBrains Mono', monospace" }}
                         >
-                            {copied ? <>✓ Copied</> : <><CopyIcon className="w-4 h-4" /><span className="hidden sm:inline">Copy</span></>}
-                        </button>
+                            @{DOMAIN}
+                        </span>
                     </div>
 
-                    {/* Regenerate */}
-                    <button
-                        onClick={onRegenerate}
-                        className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-800/60 text-zinc-400 hover:text-zinc-300 text-sm font-medium transition-all duration-200 active:scale-[0.98]"
-                    >
-                        <RefreshIcon className="w-3.5 h-3.5" />
-                        Generate New Address
-                    </button>
+                    {/* Action buttons */}
+                    <div className="flex gap-2">
+                        <button
+                            onClick={copyEmail}
+                            disabled={!emailPrefix.trim()}
+                            className={`flex-1 h-[42px] sm:h-[44px] px-4 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center justify-center gap-2 ${copied
+                                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                                    : 'bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-600/20 active:scale-[0.97] disabled:opacity-40 disabled:cursor-not-allowed'
+                                }`}
+                        >
+                            {copied ? <>✓ Copied</> : <><CopyIcon className="w-4 h-4" /> Copy Email</>}
+                        </button>
+                        <button
+                            onClick={onRegenerate}
+                            className="h-[42px] sm:h-[44px] px-4 rounded-xl border border-zinc-800 bg-zinc-950/40 hover:bg-zinc-800/60 text-zinc-400 hover:text-zinc-300 text-sm font-medium transition-all duration-200 active:scale-[0.98] flex items-center gap-2"
+                        >
+                            <RefreshIcon className="w-3.5 h-3.5" />
+                            <span className="hidden sm:inline">Random</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </header>
